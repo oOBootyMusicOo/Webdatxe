@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Đặt Xe - Xe Ghép & Xe Du Lịch</title>
+
+<!-- Font Awesome icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;color:#111;background:linear-gradient(180deg,#f7fbff,#ffffff);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.container{max-width:1100px;margin:28px auto;padding:20px}
+/* Header */
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px;border-radius:12px;background:#0b76ef;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 6px 18px rgba(11,118,239,.14)}
+h1{font-size:20px}
+nav a{margin-left:16px;color:#0b76ef;text-decoration:none;font-weight:600}
+/* Hero */
+.hero{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start;margin-bottom:22px}
+.hero-card{padding:26px;border-radius:12px;background:#fff;box-shadow:0 8px 30px rgba(15,30,60,.06)}
+.hero h2{font-size:26px;margin-bottom:8px}
+.hero p{color:#444;margin-bottom:14px}
+.steps{display:flex;gap:10px;flex-wrap:wrap}
+.step{background:#f1f7ff;color:#0b76ef;padding:8px 12px;border-radius:999px;font-weight:600;font-size:13px;display:flex;gap:8px;align-items:center}
+/* hero image */
+.hero-visual{border-radius:12px;overflow:hidden;display:block;width:100%;height:220px;background:#eef6ff;display:flex;align-items:center;justify-content:center}
+.hero-visual img{width:100%;height:100%;object-fit:cover}
+/* Booking form */
+form.booking{background:linear-gradient(180deg,#ffffff,#fbfdff);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(10,20,60,.06)}
+form.booking h3{margin-bottom:10px}
+.field{margin-bottom:12px}
+label{display:block;font-size:13px;color:#333;margin-bottom:6px}
+input[type=text], input[type=date], select{width:100%;padding:10px;border:1px solid #e6eefc;border-radius:8px;font-size:14px}
+.row{display:flex;gap:10px}
+.row .field{flex:1}
+.cta{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:#0b76ef;color:#fff;font-weight:700;margin-top:6px;cursor:pointer}
+.cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(11,118,239,.12)}
+.small{font-size:12px;color:#666;margin-top:8px}
+/* Services grid */
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:20px 0}
+.card{background:#fff;padding:14px;border-radius:12px;box-shadow:0 6px 20px rgba(14,30,60,.04);display:flex;gap:12px;align-items:flex-start;transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(14,30,60,.12)}
+.card img{width:92px;height:64px;border-radius:8px;object-fit:cover;background:#f4f6fb}
+.card h3{margin-bottom:6px;font-size:16px}
+.price{font-weight:800;color:#0b76ef}
+/* feature list with icons */
+.feature-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.feature-item{display:flex;gap:10px;align-items:flex-start;color:#333}
+.feature-item i{min-width:28px;text-align:center;color:#0b76ef;font-size:16px;margin-top:2px}
+/* contact cards */
+.contact-row{display:flex;gap:18px;flex-wrap:wrap}
+.contact-card{flex:1;min-width:220px;padding:12px;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(14,30,60,.04)}
+/* footer */
+footer{margin-top:24px;padding:18px;text-align:center;color:#666;font-size:13px}
+/* small helpers */
+.muted{color:#666;font-size:13px}
+.pill{background:#f1f7ff;color:#0b76ef;padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;display:inline-flex;gap:8px;align-items:center}
+/* Responsive */
+@media (max-width:880px){
+.hero{grid-template-columns:1fr; padding-bottom:0}
+nav{display:none}
+.two-col{grid-template-columns:1fr}
+.container{padding:16px}
+.hero-visual{height:180px}
+}
+/* driver card image */
+.driver-card img{width:80px;height:80px;border-radius:50%;object-fit:cover;background:#f0f4f9;flex-shrink:0}
+#distance-display{font-weight:600;color:#0b76ef;margin-top:4px}
+#booking-result{margin-top:12px; padding:12px; border-radius:10px; background:#e6f0ff; color:#0b76ef; display:none; font-size:14px;}
+</style>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+</head>
+
+<body>
+<div class="container">
+<header>
+  <div class="brand">
+    <div class="logo">DX</div>
+    <div>
+      <h1>ĐặtXe<span style="color:#0b76ef">.jp</span></h1>
+      <div class="muted">Xe ghép • Xe du lịch • Đưa đón</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#services">Dịch vụ</a>
+    <a href="#drivers">Tài xế</a>
+    <a href="#how">Cách đặt</a>
+    <a href="#contact">Liên hệ</a>
+  </nav>
+</header>
+
+
+
+<!-- Hero + Booking -->
+<section class="hero">
+   <div class="hero-card">
+    <h2><i class="fa-solid fa-route" style="color:#0b76ef;margin-right:8px"></i> Đặt xe ghép & xe du lịch — đưa đón nhanh, an toàn tại Nhật Bản</h2>
+    <p>Chọn điểm đi/đến, ngày — chúng tôi đề xuất xe ghép hoặc xe riêng phù hợp: giá rõ ràng, tài xế chuyên nghiệp.</p>
+    <div class="steps" aria-hidden="true">
+      <div class="step"><i class="fa-solid fa-money-bill-wave"></i> Giá cạnh tranh</div>
+      <div class="step"><i class="fa-solid fa-chair"></i> Chọn ghế</div>
+      <div class="step"><i class="fa-solid fa-lock"></i> Thanh toán an toàn</div>
+      <div class="step"><i class="fa-solid fa-bell"></i> Xác nhận</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+      <div class="pill"><i class="fa-solid fa-user-check"></i> Tài xế lý lịch rõ ràng</div>
+      <div class="pill"><i class="fa-solid fa-calendar-days"></i> Hủy/đổi linh hoạt</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+      <div>
+        <h3 style="font-size:16px;margin-bottom:8px">Ưu tiên</h3>
+        <div class="feature-list">
+          <div class="feature-item"><i class="fa-solid fa-car"></i><div>Xe ghép tiết kiệm — giá cả linh hoạt</div></div>
+          <div class="feature-item"><i class="fa-solid fa-users"></i><div>Xe du lịch 4–45 chỗ cho đoàn</div></div>
+          <div class="feature-item"><i class="fa-solid fa-headset"></i><div>Hỗ trợ: 8:00–21:00, 24/7 hotline khẩn</div></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:16px;margin-bottom:8px">Phù hợp cho</h3>
+        <div class="feature-list">
+          <div class="feature-item"><i class="fa-solid fa-person"></i><div>Người đi 1-2 — chọn ghép</div></div>
+          <div class="feature-item"><i class="fa-solid fa-suitcase-rolling"></i><div>Du lịch theo đoàn — chọn xe lớn</div></div>
+          <div class="feature-item"><i class="fa-solid fa-plane-departure"></i><div>Đưa đón sân bay</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="hero-visual" aria-hidden="true">
+      <img src="carpool.jpg" alt="Ảnh minh họa xe du lịch">
+    </div>
+
+    <form class="booking" id="bookingForm" aria-label="Form đặt xe" style="margin-top:12px">
+      <h3><i class="fa-solid fa-ticket-simple" style="color:#0b76ef;margin-right:8px"></i> Đặt ngay</h3>
+        <p>Nhập thông tin chuyến xe để nhận báo giá qua Email hoặc SMS.</p>
+      <div class="field">
+        <label for="type">Loại xe</label>
+        <select id="type" name="type" required>
+          <option value="ghép">Xe ghép (tiết kiệm)</option>
+          <option value="4chỗ">Xe 4 chỗ (riêng)</option>
+          <option value="7chỗ">Xe 7 chỗ</option>
+          <option value="16chỗ">Xe 16 chỗ</option>
+          <option value="29chỗ">Xe 29 chỗ</option>
+          <option value="45chỗ">Xe 45 chỗ</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="from">Đi từ</label>
+          <input id="from" name="from" type="text" placeholder="VD: Osaka, Kansai Airport" required>
+        </div>
+        <div class="field">
+          <label for="to">Đến</label>
+          <input id="to" name="to" type="text" placeholder="VD: Kyoto, Tabuchiyama" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Khoảng cách dự kiến</label>
+        <div id="distance-display">—</div>
+      </div>
+
+      <div class="row" style="margin-top:6px">
+        <div class="field">
+          <label for="date">Ngày</label>
+          <input id="date" name="date" type="date" required>
+        </div>
+        <div class="field">
+          <label for="passengers">Hành khách</label>
+          <select id="passengers" name="passengers">
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="name">Họ tên liên hệ</label>
+        <input id="name" name="name" type="text" placeholder="Nguyễn Văn A" required>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="email@example.com" required>
+      </div>
+
+      <div class="field">
+        <label for="phone">Số điện thoại</label>
+        <input id="phone" name="phone" type="text" placeholder="080-xxxx-xxxx" required>
+      </div>
+
+      <div class="field">
+        <label>Nhận báo giá bằng</label>
+        <div class="radio-group">
+          <label><input type="radio" name="notify" value="email" checked>Email</label>
+          <label><input type="radio" name="notify" value="sms">SMS</label>
+        </div>
+      </div>
+
+      <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY_HERE"></div>
+
+      <button class="cta" type="submit"><i class="fa-solid fa-magnifying-glass-dollar" style="margin-right:8px"></i> Nhận báo giá</button>
+      <div class="small">Bằng cách tiếp tục bạn đồng ý với <a href="#" style="color:#0b76ef">Điều khoản</a> và <a href="#" style="color:#0b76ef">Chính sách</a>.</div>
+
+      <div id="booking-result"></div>
+    </form>
+  </div>
+</section>
+
+<!-- Services -->
+<section id="services">
+  <h2 style="margin:10px 0">Gói dịch vụ tiêu biểu</h2>
+  <div class="services">
+    <article class="card">
+      <img src="xeghep.jfif" alt="Xe ghép">
+      <div>
+        <h3>Xe ghép - Tiết kiệm</h3>
+        <p class="price">Giá cả hợp lý</p>
+        <p class="muted" style="margin-top:6px">Ghép khách cùng lộ trình. Thích hợp chuyến ngắn.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="xe4-7cho.jfif" alt="Xe 4-7 chỗ">
+      <div>
+        <h3>Xe 4-7 chỗ - Riêng</h3>
+        <p class="price">Giá cả ưu đãi</p>
+        <p class="muted" style="margin-top:6px">Xe riêng, phù hợp cặp đôi/gia đình.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="xedulich.jfif" alt="Xe du lịch 16-45 chỗ">
+      <div>
+        <h3>Xe du lịch 16-45 chỗ</h3>
+        <p class="price">Giá theo hợp đồng</p>
+        <p class="muted" style="margin-top:6px">Đoàn du lịch, hội thảo, sự kiện. Hỗ trợ tour.</p>
+      </div>
+    </article>
+    <article class="card">
+      <img src="xeduadonsb.jfif" alt="Đưa đón sân bay">
+      <div>
+        <h3>Đưa đón sân bay</h3>
+        <p class="price">Giá cả cạnh tranh</p>
+        <p class="muted" style="margin-top:6px">Đưa đón tận nơi.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" style="margin-top:12px">
+  <h2 style="margin-bottom:8px">Cách đặt — 3 bước</h2>
+  <ol style="margin-left:18px;color:#333">
+    <li style="margin-bottom:8px"><i class="fa-solid fa-pen-to-square" style="margin-right:8px;color:#0b76ef"></i> Nhập thông tin & chọn xe</li>
+    <li style="margin-bottom:8px"><i class="fa-solid fa-credit-card" style="margin-right:8px;color:#0b76ef"></i> Xem báo giá & thanh toán (cọc)</li>
+    <li style="margin-bottom:8px"><i class="fa-solid fa-truck-fast" style="margin-right:8px;color:#0b76ef"></i> Nhận xác nhận & theo dõi tài xế</li>
+  </ol>
+</section>
+
+
+
+
+<!-- Drivers -->
+<section id="drivers" style="margin-top:20px">
+  <h2 style="margin-bottom:12px">Danh sách tài xế</h2>
+  <div class="services">
+    <article class="card driver-card">
+      <img src="ava1.jfif" alt="Driver 1" loading="lazy">
+      <div>
+        <h3>Ngô Quang Tiến</h3>
+        <p class="muted">Bằng: B2 • 10 năm kinh nghiệm</p>
+        <p style="color:#f39c12;margin-top:4px">★★★★★ (120 đánh giá)</p>
+      </div>
+    </article>
+    <article class="card driver-card">
+      <img src="ava2.jfif" alt="Driver 2" loading="lazy">
+      <div>
+        <h3>Lâm Thị Nhã Phượng</h3>
+        <p class="muted">Bằng: D • 5 năm kinh nghiệm</p>
+        <p style="color:#f39c12;margin-top:4px">★★★★☆ (200 đánh giá)</p>
+      </div>
+    </article>
+    <article class="card driver-card">
+      <img src="ava3.jfif" alt="Driver 3" loading="lazy">
+      <div>
+        <h3>Lư Văn Hiền</h3>
+        <p class="muted">Bằng: C • 7 năm kinh nghiệm</p>
+        <p style="color:#f39c12;margin-top:4px">★★★★☆ (95 đánh giá)</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- Contact -->
+<section id="contact" style="margin-top:12px">
+  <h2 style="margin-bottom:10px">Liên hệ</h2>
+  <div class="contact-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px">
+
+    <!-- Hotline + Email -->
+    <div class="contact-card">
+      <strong><i class="fa-solid fa-phone" style="color:#0b76ef;margin-right:8px"></i> Hỗ trợ đặt xe</strong>
+      <div style="margin-top:6px" class="muted">Hotline: <a href="tel:080-xxxx-xxxx" style="color:#0b76ef">080-xxxx-xxxx</a></div>
+      <div class="muted">Email: <a href="mailto:booking@datxe.jp" style="color:#0b76ef">booking@datxe.jp</a></div>
+    </div>
+
+    <!-- Địa chỉ-->
+    <div class="contact-card">
+      <strong><i class="fa-solid fa-map-marker-alt" style="color:#0b76ef;margin-right:8px"></i> Văn phòng</strong>
+      <div style="margin-top:6px" class="muted">〒729-0105 <br> 広島県福山市南松永町3丁目9-11</div>
+      <div class="muted">Thời gian làm việc: <b>8:00 - 21:00</b></div>
+    </div>
+
+    <!-- Facebook / Zalo / Line -->
+    <div class="contact-card">
+      <strong><i class="fa-solid fa-hashtag" style="color:#0b76ef;margin-right:8px"></i> Mạng xã hội</strong>
+      <div class="muted" style="margin-top:6px">
+        <i class="fa-brands fa-facebook" style="height:20px;color:#1877f2;margin-right:6px"></i>
+        <a href="https://facebook.com/datxe.vn" target="_blank" style="color:#1877f2" >Facebook.com/DatXe.jp</a>
+      </div>
+      <div class="muted">
+        <img src="zalo.png" style="width:15px;margin-right:6px">
+
+        <a href="https://zalo.me/0900000000" target="_blank" style="color:#0084ff">080-xxxx-xxxx</a>
+      </div>
+      <div class="muted">
+        <i class="fa-brands fa-line" style="color:#06c755;margin-right:6px"></i>
+        <a href="https://line.me/ti/p/yourlineid" target="_blank" style="color:#06c755">Line</a>
+      </div>
+      <div style="margin-top:8px">
+        <img src="QR_fb.png" alt="QR_fb" style="width:80px;height:80px">
+        <img src="QR_zalo.png" alt="QR_zalo" style="width:80px;height:80px">
+        <img src="QR_line.png" alt="QR_line" style="width:80px;height:80px">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer>
+  © <span id="year"></span> ĐặtXe.jp — Demo front-end
+</footer>
+</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// validate phone
+document.querySelector('form.booking').addEventListener('submit', function(e){
+  var phone = document.getElementById('phone').value.trim();
+  if(phone && !/^\+?\d{8,15}$/.test(phone)){
+    e.preventDefault();
+    alert('Số điện thoại không hợp lệ. Vui lòng nhập 8-15 chữ số.');
+    return;
+  }
+  e.preventDefault();
+  const type = document.getElementById('type').value;
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const date = document.getElementById('date').value;
+  const passengers = document.getElementById('passengers').value;
+  const name = document.getElementById('name').value;
+  const phoneVal = phone;
+  const distance = document.getElementById('distance-display').textContent;
+
+  document.getElementById('booking-result').style.display='block';
+  document.getElementById('booking-result').innerHTML = `
+    <strong>Đặt xe tạm tính:</strong><br>
+    Loại xe: ${type}<br>
+    Từ: ${from} → ${to} (${distance})<br>
+    Ngày: ${date}<br>
+    Hành khách: ${passengers}<br>
+    Liên hệ: ${name}, ${phoneVal}
+  `;
+});
+
+// Tính khoảng cách bằng Google Maps API
+function updateDistance() {
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  if(!from || !to) return;
+
+  const service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix({
+    origins: [from],
+    destinations: [to],
+    travelMode: 'DRIVING',
+  }, function(response, status) {
+    if(status==='OK'){
+      const distanceText = response.rows[0].elements[0].distance?.text || 'Không xác định';
+      document.getElementById('distance-display').textContent = distanceText;
+    } else {
+      document.getElementById('distance-display').textContent = 'Không xác định';
+    }
+  });
+}
+document.getElementById('from').addEventListener('change', updateDistance);
+document.getElementById('to').addEventListener('change', updateDistance);
+
+// Submit form
+document.getElementById('bookingForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const notifyMethod = document.querySelector('input[name="notify"]:checked').value;
+
+  // Validate email
+  if(!/^\S+@\S+\.\S+$/.test(email)){
+    alert('Email không hợp lệ');
+    return;
+  }
+  // Validate phone
+  if(!/^\+?\d{8,15}$/.test(phone)){
+    alert('Số điện thoại không hợp lệ (8-15 chữ số)');
+    return;
+  }
+  // Validate reCAPTCHA
+  if(grecaptcha.getResponse() === ''){
+    alert('Vui lòng xác nhận captcha');
+    return;
+  }
+
+  const type = document.getElementById('type').value;
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const date = document.getElementById('date').value;
+  const passengers = document.getElementById('passengers').value;
+  const name = document.getElementById('name').value;
+  const distance = document.getElementById('distance-display').textContent;
+
+  const msgBox = document.getElementById('booking-result');
+  msgBox.style.display='block';
+  msgBox.innerHTML = `<strong>Báo giá tạm tính:</strong><br>
+  Loại xe: ${type}<br>
+  Từ: ${from} → ${to} (${distance})<br>
+  Ngày: ${date}<br>
+  Hành khách: ${passengers}<br>
+  Liên hệ: ${name}, ${phone}<br>
+  <strong>Báo giá sẽ được gửi qua ${notifyMethod === 'email' ? email : phone}</strong>`;
+
+  grecaptcha.reset();
+  // TODO: gọi API backend gửi PDF + hướng dẫn thanh toán
+});
+
+
+</script>
+</body>
+</html>
